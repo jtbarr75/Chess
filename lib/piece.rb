@@ -17,6 +17,10 @@ class Piece
     @icon = @icon = ICONS["#{self.class.name.downcase}_#{color}".to_sym]
   end
 
+  def to_s 
+    @icon
+  end
+
   #each piece is initialized with all valid moves from their pos
   def create_moves
     valid_moves = []
@@ -101,9 +105,9 @@ end
 #can move diagonally to take another piece
 class Pawn < Piece
     def create_moves
-      if color == 'white'
+      if @color == 'white'
         return [[0,-1],[0,-2],[1,-1],[-1,-1]]
-      elsif color == 'black'
+      elsif @color == 'black'
         return [[0,1],[0,2],[1,1],[-1,1]]
       end
     end
