@@ -14,7 +14,7 @@ class Piece
     @pos = pos
     @board = board
     @moves = create_moves
-    @icon = @icon = ICONS["#{self.class.name.downcase}_#{color}".to_sym]
+    @icon = ICONS["#{self.class.name.downcase}_#{color}".to_sym]
   end
 
   def to_s 

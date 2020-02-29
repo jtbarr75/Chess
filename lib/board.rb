@@ -4,8 +4,8 @@ require_relative 'square.rb'
 class Board
   attr_reader :grid
 
-  WHITE = "\u{25A0}"
-  BLACK = "\u{25A1}"
+  WHITE = " "
+  BLACK = " "
   
   def initialize
     @grid = create_blank_board
@@ -41,7 +41,18 @@ class Board
 
   #Prints the grid
   def print_grid
-    grid.each { |row| puts row.map(&:to_s).join(" ") }
+    alternate = false
+    grid.each do |row|
+      alternate = !alternate
+      row.map(&:to_s).each_with_index do |icon, index|
+        if alternate
+          print "#{index%2 == 0 ? colorize("#{icon} ", 'black', 'white') : colorize("#{icon} ", 'black', 'dark gray')}"
+        else
+          print "#{index%2 == 0 ? colorize("#{icon} ", 'black', 'dark gray') : colorize("#{icon} ", 'black', 'white')}"
+        end
+      end
+      print "\n"
+    end
   end
 
   def place_piece(piece, location)
@@ -49,7 +60,15 @@ class Board
     col = location[1]
     @grid[row][col].current = piece
   end
+
+  def colorize(text, color = "default", bgColor = "default")
+    colors = {"default" => "38","black" => "30", "gray" => "37", "dark gray" => "1;30", "white" => "1;37"}
+    bgColors = {"default" => "0", "black" => "40", "gray" => "47", "dark gray" => "100", "white" => "107"}
+    color_code = colors[color]
+    bgColor_code = bgColors[bgColor]
+    return "\033[#{bgColor_code};#{color_code}m#{text}\033[0m"
+  end
 end
 
-board = Board.new
-board.print_grid
+# board = Board.new
+# board.print_grid
