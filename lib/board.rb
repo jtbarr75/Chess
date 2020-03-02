@@ -68,6 +68,10 @@ class Board
     bgColor_code = bgColors[bgColor]
     return "\033[#{bgColor_code};#{color_code}m#{text}\033[0m"
   end
+
+  def at(row, col)
+    board[row][col]
+  end
 end
 
 # board = Board.new

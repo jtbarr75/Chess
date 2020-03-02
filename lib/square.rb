@@ -16,4 +16,8 @@ class Square
   def to_s
     @current
   end
+
+  def delete
+    current = @default
+  end
 end
