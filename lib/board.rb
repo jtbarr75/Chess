@@ -42,7 +42,10 @@ class Board
   #Prints the grid
   def print_grid
     alternate = false
-    grid.each do |row|
+    puts "   A B C D E F G H"
+    rows = {}
+    grid.each_with_index do |row, index|
+      print "#{8 - index} "
       alternate = !alternate
       row.map(&:to_s).each_with_index do |icon, index|
         if alternate
@@ -58,7 +61,13 @@ class Board
   def place_piece(piece, location)
     row = location[0]
     col = location[1]
+    #change displayed image at pieces original location to blank
+    self.at(piece.row, piece.col).set_default 
+    #set new location's current piece to piece
     @grid[row][col].current = piece
+    #update pieces stored location
+    piece.row = row
+    piece.col = col
   end
 
   def colorize(text, color = "default", bgColor = "default")
@@ -70,7 +79,12 @@ class Board
   end
 
   def at(row, col)
-    board[row][col]
+    grid[row][col] if row.between?(0, 7) && col.between?(0, 7)
+  end
+
+  def pieces(white_turn)
+    grid.flatten.select { |space| space.current.is_a?(Piece) && space.current.color == (white_turn ? 'white' : 'black')}
+                .map { |space| [space.current.row, space.current.col] }
   end
 end
 
