@@ -1,5 +1,5 @@
 class Piece
-  attr_reader :name, :icon, :board
+  attr_reader :name, :icon, :board, :color
   attr_accessor :row, :col
 
   ICONS = { king_white: "\u{2654}", king_black: "\u{265A}",
@@ -14,7 +14,6 @@ class Piece
     @row = pos[0]
     @col = pos[1]
     @board = board
-    @moves = create_moves
     @icon = ICONS["#{self.class.name.downcase}_#{color}".to_sym]
   end
 
@@ -42,51 +41,101 @@ class Piece
   end
 
   #add every move to the left or right up to n spaces e.g. queen can move max 7 spaces
-  def generate_horizontal_moves(n, count = 0)
-    return if counter > 1
+  def generate_horizontal_moves(n)
     moves = []
-    (1..n).each do |i|
+    (1..n).each do |i| 
+      break if row + i > 7
       target = board.at(row + i, col).current
-      if target.instance_of? Piece
+      if target.is_a? Piece
         moves << [i, 0] unless target.color == self.color
         break
+      else
+        moves << [i,0]
       end
     end
-    moves + generate_horizontal_moves(-n, counter + 1)
+    (1..n).each do |i| 
+      break if row - i < 0
+      target = board.at(row - i, col).current
+      if target.is_a? Piece
+        moves << [-i, 0] unless target.color == self.color
+        break
+      else
+        moves << [-i,0]
+      end
+    end
+    moves
   end
 
   #add every move up and down up to n spaces e.g. queen can move max 7 spaces
-  def generate_vertical_moves(n, count = 0)
+  def generate_vertical_moves(n)
     moves = []
     (1..n).each do |i|
+      break if col + i > 7
       target = board.at(row, col + i).current
-      if target.instance_of? Piece
+      if target.is_a? Piece
         moves << [0, i] unless target.color == self.color
         break
+      else
+        moves << [0,i]
       end
     end
-    moves + generate_vertical_moves(-n, count + 1)
+    (1..n).each do |i|
+      break if col - i < 0
+      target = board.at(row, col - i).current
+      if target.is_a? Piece
+        moves << [0, -i] unless target.color == self.color
+        break
+      else
+        moves << [0, -i]
+      end
+    end
+    moves 
   end
 
   #add every move diagonally up for max n spaces e.g. queen can move max 7 spaces
-  def generate_diagonal_moves(n, count = 0)
-    return if count > 1
+  def generate_diagonal_moves(n)
     moves = []
     (1..n).each do |i|
+      break if row + i > 7 || col + i > 7
       target = board.at(row + i, col + i).current
-      if target.instance_of? Piece
+      if target.is_a? Piece
         moves << [i, i] unless target.color == self.color
         break
+      else
+        moves << [i, i]
       end
     end
     (1..n).each do |i|
+      break if row + i > 7 || col - i < 0
       target = board.at(row + i, col - i).current
-      if target.instance_of? Piece
+      if target.is_a? Piece
         moves << [i, -i] unless target.color == self.color
         break
+      else
+        moves << [i, -i]
       end
     end
-    moves + generate_diagonal_moves(-n, count + 1)
+    (1..n).each do |i|
+      break if row - i < 0 || col - i < 0
+      target = board.at(row - i, col - i).current
+      if target.is_a? Piece
+        moves << [-i, -i] unless target.color == self.color
+        break
+      else
+        moves << [-i, -i]
+      end
+    end
+    (1..n).each do |i|
+      break if row - i < 0 || col + i > 7
+      target = board.at(row - i, col + i).current
+      if target.is_a? Piece
+        moves << [-i, i] unless target.color == self.color
+        break
+      else
+        moves << [-i, i]
+      end
+    end
+    moves
   end
 end
 
