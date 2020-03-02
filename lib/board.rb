@@ -42,7 +42,7 @@ class Board
   #Prints the grid
   def print_grid
     alternate = false
-    puts "   A B C D E F G H"
+    puts "  A B C D E F G H"
     rows = {}
     grid.each_with_index do |row, index|
       print "#{8 - index} "
@@ -54,8 +54,10 @@ class Board
           print "#{index%2 == 0 ? colorize("#{icon} ", 'black', 'dark gray') : colorize("#{icon} ", 'black', 'white')}"
         end
       end
+      print " #{8 - index}"
       print "\n"
     end
+    puts "  A B C D E F G H"
   end
 
   def place_piece(piece, location)
@@ -83,8 +85,10 @@ class Board
   end
 
   def pieces(white_turn)
-    grid.flatten.select { |space| space.current.is_a?(Piece) && space.current.color == (white_turn ? 'white' : 'black')}
-                .map { |space| [space.current.row, space.current.col] }
+    grid.flatten.select do |space|
+      piece = space.current
+       piece.is_a?(Piece) && piece.color == (white_turn ? 'white' : 'black') && piece.valid_locations != []
+    end.map { |space| [space.current.row, space.current.col] }
   end
 end
 

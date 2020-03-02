@@ -34,6 +34,8 @@ class Game
     until over?
       starting_location = choose_piece_location
       piece = board.at(starting_location[0], starting_location[1]).current
+      available_moves = piece.valid_locations.map { |value| locations.key(value) }
+      puts "Available moves: #{available_moves.join(", ")}"
       board.place_piece( piece, choose_destination(piece) )
       board.print_grid
       @white_turn = !@white_turn

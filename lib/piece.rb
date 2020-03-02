@@ -1,3 +1,5 @@
+
+
 class Piece
   attr_reader :name, :icon, :board, :color
   attr_accessor :row, :col
@@ -21,19 +23,13 @@ class Piece
     @icon
   end
 
-  def valid_moves
-    valid_moves = []
-    @moves.each do |move|
-      pos = [move[0] + loc[0], move[1] + loc[1]]
-      target = board.at(pos[0], pos[1]).current
-      if target.instance_of?(Piece)
-        valid_moves  << pos if target.color == self.color 
-      end
-      if pos[0].between?(0,7) && pos[1].between?(0,7)
-        valid_moves << pos 
-      end
+  def valid_locations
+    moves = create_moves
+    valid = []
+    moves.each do |move|
+      valid << [move[0] + row, move[1] + col]
     end
-    valid_moves
+    valid
   end
 
   def create_moves
@@ -161,9 +157,12 @@ class Knight < Piece
     def create_moves
       moves = []
       [[2,1],[2,-1],[-2,1],[-2,1],[1,2],[-1,2],[1,-2],[-1,-2]].each do |move|
+        next unless (row + move[0]).between?(0,7) && (col + move[1]).between?(0,7)
         target = board.at(row + move[0], col + move[1]).current
-        if target.instance_of? Piece
+        if target.is_a? Piece
           moves << move unless target.color == self.color
+        else
+          moves << move
         end
       end
       moves
@@ -182,31 +181,37 @@ end
 class Pawn < Piece
   def initialize(color, pos, board)
     super(color, pos, board)
-    @first_move = true
   end
 
   #update with block for board.at ?
+  #BIG UGLY pls reformat
   def create_moves
     moves = []
     if @color == 'white'
-      if @first_move
-        moves << [0, -2] unless board.at(row, col - 2).current.instance_of? Piece
+      if row == 6
+        moves << [-2, 0] unless board.at(row - 2, col).current.is_a?(Piece) || board.at(row - 1, col).current.is_a?(Piece)
       end
-      moves << [0, -1] unless board.at(row, col - 1).current.instance_of? Piece
-      [[1,-1],[-1,-1]].each do |move|
+      if (row - 1).between?(0, 7)
+        moves << [-1, 0] unless board.at(row - 1, col).current.is_a? Piece
+      end
+      [[-1,-1],[-1,1]].each do |move|
+        next unless (row + move[0]).between?(0, 7) && (col + move[1]).between?(0,7)
         target = board.at(row + move[0], col + move[1]).current
-        if target.instance_of? Piece
+        if target.is_a? Piece
           moves << move unless target.color == self.color
         end
       end
     elsif @color == 'black'
-      if @first_move
-        moves << [0, -2] unless board.at(row, col - 2).current.instance_of? Piece
+      if row == 1
+        moves << [2, 0] unless board.at(row + 2, col).current.is_a? Piece || board.at(row + 1, col).current.is_a?(Piece)
       end
-      moves << [0, -1] unless board.at(row, col - 1).current.instance_of? Piece
-      [[1,-1],[-1,-1]].each do |move|
+      if (row + 1).between?(0, 7)
+        moves << [1, 0] unless board.at(row + 1, col).current.is_a? Piece
+      end
+      [[1, 1],[1, -1]].each do |move|
+        next unless (row + move[0]).between?(0, 7) && (col + move[1]).between?(0,7)
         target = board.at(row + move[0], col + move[1]).current
-        if target.instance_of? Piece
+        if target.is_a? Piece
           moves << move unless target.color == self.color
         end
       end
