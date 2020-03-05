@@ -23,6 +23,11 @@ class Piece
     @icon
   end
 
+  def set_location(loc)
+    @row = loc[0]
+    @col = loc[1]
+  end
+
   def valid_locations
     moves = create_moves
     valid = []
@@ -41,7 +46,7 @@ class Piece
     moves = []
     (1..n).each do |i| 
       break if row + i > 7
-      target = board.at(row + i, col).current
+      target = board.at(row + i, col)
       if target.is_a? Piece
         moves << [i, 0] unless target.color == self.color
         break
@@ -51,7 +56,7 @@ class Piece
     end
     (1..n).each do |i| 
       break if row - i < 0
-      target = board.at(row - i, col).current
+      target = board.at(row - i, col)
       if target.is_a? Piece
         moves << [-i, 0] unless target.color == self.color
         break
@@ -67,7 +72,7 @@ class Piece
     moves = []
     (1..n).each do |i|
       break if col + i > 7
-      target = board.at(row, col + i).current
+      target = board.at(row, col + i)
       if target.is_a? Piece
         moves << [0, i] unless target.color == self.color
         break
@@ -77,7 +82,7 @@ class Piece
     end
     (1..n).each do |i|
       break if col - i < 0
-      target = board.at(row, col - i).current
+      target = board.at(row, col - i)
       if target.is_a? Piece
         moves << [0, -i] unless target.color == self.color
         break
@@ -93,7 +98,7 @@ class Piece
     moves = []
     (1..n).each do |i|
       break if row + i > 7 || col + i > 7
-      target = board.at(row + i, col + i).current
+      target = board.at(row + i, col + i)
       if target.is_a? Piece
         moves << [i, i] unless target.color == self.color
         break
@@ -103,7 +108,7 @@ class Piece
     end
     (1..n).each do |i|
       break if row + i > 7 || col - i < 0
-      target = board.at(row + i, col - i).current
+      target = board.at(row + i, col - i)
       if target.is_a? Piece
         moves << [i, -i] unless target.color == self.color
         break
@@ -113,7 +118,7 @@ class Piece
     end
     (1..n).each do |i|
       break if row - i < 0 || col - i < 0
-      target = board.at(row - i, col - i).current
+      target = board.at(row - i, col - i)
       if target.is_a? Piece
         moves << [-i, -i] unless target.color == self.color
         break
@@ -123,7 +128,7 @@ class Piece
     end
     (1..n).each do |i|
       break if row - i < 0 || col + i > 7
-      target = board.at(row - i, col + i).current
+      target = board.at(row - i, col + i)
       if target.is_a? Piece
         moves << [-i, i] unless target.color == self.color
         break
@@ -158,7 +163,7 @@ class Knight < Piece
       moves = []
       [[2,1],[2,-1],[-2,1],[-2,1],[1,2],[-1,2],[1,-2],[-1,-2]].each do |move|
         next unless (row + move[0]).between?(0,7) && (col + move[1]).between?(0,7)
-        target = board.at(row + move[0], col + move[1]).current
+        target = board.at(row + move[0], col + move[1])
         if target.is_a? Piece
           moves << move unless target.color == self.color
         else
@@ -189,28 +194,28 @@ class Pawn < Piece
     moves = []
     if @color == 'white'
       if row == 6
-        moves << [-2, 0] unless board.at(row - 2, col).current.is_a?(Piece) || board.at(row - 1, col).current.is_a?(Piece)
+        moves << [-2, 0] unless board.at(row - 2, col).is_a?(Piece) || board.at(row - 1, col).is_a?(Piece)
       end
       if (row - 1).between?(0, 7)
-        moves << [-1, 0] unless board.at(row - 1, col).current.is_a? Piece
+        moves << [-1, 0] unless board.at(row - 1, col).is_a? Piece
       end
       [[-1,-1],[-1,1]].each do |move|
         next unless (row + move[0]).between?(0, 7) && (col + move[1]).between?(0,7)
-        target = board.at(row + move[0], col + move[1]).current
+        target = board.at(row + move[0], col + move[1])
         if target.is_a? Piece
           moves << move unless target.color == self.color
         end
       end
     elsif @color == 'black'
       if row == 1
-        moves << [2, 0] unless board.at(row + 2, col).current.is_a? Piece || board.at(row + 1, col).current.is_a?(Piece)
+        moves << [2, 0] unless board.at(row + 2, col).is_a? Piece || board.at(row + 1, col).is_a?(Piece)
       end
       if (row + 1).between?(0, 7)
-        moves << [1, 0] unless board.at(row + 1, col).current.is_a? Piece
+        moves << [1, 0] unless board.at(row + 1, col).is_a? Piece
       end
       [[1, 1],[1, -1]].each do |move|
         next unless (row + move[0]).between?(0, 7) && (col + move[1]).between?(0,7)
-        target = board.at(row + move[0], col + move[1]).current
+        target = board.at(row + move[0], col + move[1])
         if target.is_a? Piece
           moves << move unless target.color == self.color
         end

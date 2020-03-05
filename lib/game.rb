@@ -3,9 +3,6 @@ require_relative 'board.rb'
 class Game
   attr_reader :board, :locations
 
-  WHITE_SQUARE = "\u{25A0}"
-  BLACK_SQUARE = "\u{25A1}"
-
   def initialize
     @board = Board.new
     @white_turn = true
@@ -33,7 +30,7 @@ class Game
     board.print_grid
     until over?
       starting_location = choose_piece_location
-      piece = board.at(starting_location[0], starting_location[1]).current
+      piece = board.at(starting_location[0], starting_location[1])
       available_moves = piece.valid_locations.map { |value| locations.key(value) }
       puts "Available moves: #{available_moves.join(", ")}"
       board.place_piece( piece, choose_destination(piece) )
@@ -54,9 +51,9 @@ class Game
 
   #prompts player to choose a piece
   def choose_piece_location
-    available_pieces = board.pieces(@white_turn)
+    available_pieces = board.pieces_with_moves(@white_turn)
+    puts "#{@white_turn ? "White" : "Black"}'s turn."
     loop do
-      puts "#{@white_turn ? "White" : "Black"}'s turn."
       puts "Please choose a piece to move on the board by typing its location"
       space = gets.chomp
       return locations[space] if available_pieces.include?(locations[space]) 
@@ -65,6 +62,10 @@ class Game
 
   #returns true when a player is in checkmate
   def over?
-    false
+    if board.black_checkmate?
+      puts "Checkmate!"
+    elsif board.black_check?
+      puts "Check."
+    end
   end
 end
