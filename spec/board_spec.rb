@@ -5,7 +5,7 @@ describe Board do
 
   describe "#colorize" do 
     it "sets text backround color to white" do 
-      expect { puts @board.colorize("string", 'black', 'white') }.to output("\033[107;30mstring\033[0m\n").to_stdout
+      expect { puts @board.colorize("string", 'white') }.to output("\033[107;30mstring\033[0m\n").to_stdout
     end
   end
 
