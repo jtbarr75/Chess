@@ -1,10 +1,7 @@
-require_relative 'piece.rb'
+Dir["./lib/pieces/*.rb"].each {|file| require file }
 
 class Board
   attr_reader :grid
-
-  WHITE = " "
-  BLACK = " "
   
   def initialize
     @grid = Array.new(8) { Array.new(8, nil) }
