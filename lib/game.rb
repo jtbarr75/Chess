@@ -62,10 +62,14 @@ class Game
 
   #returns true when a player is in checkmate
   def over?
-    if board.black_checkmate?
-      puts "Checkmate!"
-    elsif board.black_check?
-      puts "Check."
+    if @white_turn
+      if board.black_king.in_check?
+        board.checkmate?(@white_turn) ? puts "Checkmate" : puts "Check"
+      end
+    else
+      if board.white_king.in_check?
+        board.checkmate?(@white_turn) ? puts "Checkmate" : puts "Check"
+      end
     end
   end
 end

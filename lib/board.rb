@@ -82,42 +82,18 @@ class Board
     grid.flatten.select{ |piece| piece.is_a?(Piece) && piece.color == 'black' }
   end
 
-  def black_check?(king_row = @black_king.row, king_col = @black_king.col)
-    threatened_locations = []
-    self.white_pieces.each do |piece|
-      threatened_locations << piece.valid_locations 
-    end
-    if threatened_locations.flatten(1).include?([king_row, king_col])
-      return true
-    end
-    false
+  def king(color)
+    grid.flatten.select { |piece| piece.is_a?(King) && piece.color == color}.first
   end
 
-  def white_check?(king_row = @white_king.row, king_col = @white_king.col)
-    threatened_locations = []
-    self.black_pieces.each do |piece|
-      threatened_locations << piece.valid_locations
+  def checkmate?(white_turn)
+    white_turn ? king = king('black') : king = king('white')
+    checkmate = false
+    if king.in_check?
+      checkmate = true if king.valid_locations == []
+      checkmate = @black_king.valid_locations.all? { |location| black_check?(location[0], location[1]) }
     end
-    if threatened_locations.flatten(1).include?([king_row, king_col])
-      return true
-    end
-    false
-  end
-
-  def black_checkmate?
-    if black_check?
-      return true if @black_king.valid_locations == []
-      puts @black_king.valid_locations
-      return @black_king.valid_locations.all? { |location| black_check?(location[0], location[1]) }
-    end
-    false
-  end
-
-  def white_checkmate?
-    if black_check?
-      return @white_king.valid_locations.all? { |location| white_check?(location[0], location[1]) }
-    end
-    false
+    checkmate
   end
 end
 
