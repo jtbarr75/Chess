@@ -29,6 +29,15 @@ class Piece
   end
 
   def valid_locations
+    moves = create_moves.select { |move| into_check?(row + move[0], col + move[1]) == false}
+    valid = []
+    moves.each do |move|
+      valid << [move[0] + row, move[1] + col]
+    end
+    valid
+  end
+
+  def threatened_locations
     moves = create_moves
     valid = []
     moves.each do |move|
@@ -41,101 +50,51 @@ class Piece
     []
   end
 
-  #add every move to the left or right up to n spaces e.g. queen can move max 7 spaces
-  def generate_horizontal_moves(n)
+  #used to generate moves horizontally, vertically, diagonally
+  #returns an array of locations moving from the current location in the horizontal/vertical direction (-1,0,1) up to edges of the board 0 or 7
+  def generate_moves(n, row_dir, col_dir)
     moves = []
     (1..n).each do |i| 
-      break if row + i > 7
-      target = board.at(row + i, col)
+      new_row = row + i*row_dir
+      new_col = col + i*col_dir
+      break if (new_row > 7 || new_row < 0) || (new_col > 7 || new_col < 0)
+      target = board.at(new_row, new_col)
       if target.is_a? Piece
-        moves << [i, 0] unless target.color == self.color
+        moves << [i*row_dir, i*col_dir] unless target.color == self.color
         break
       else
-        moves << [i,0]
-      end
-    end
-    (1..n).each do |i| 
-      break if row - i < 0
-      target = board.at(row - i, col)
-      if target.is_a? Piece
-        moves << [-i, 0] unless target.color == self.color
-        break
-      else
-        moves << [-i,0]
+        moves << [i*row_dir, i*col_dir]
       end
     end
     moves
+  end
+
+  def into_check?(new_row, new_col)
+    check = false
+    king = board.king(color)
+    piece_at_destination = board.at(new_row, new_col)
+
+    initial_row, initial_col = self.row, self.col
+    board.place_piece(self, [new_row, new_col])
+    check = true if king.in_check?
+    
+    board.place_piece(self, [initial_row, initial_col])
+    board.place_piece(piece_at_destination, [new_row, new_col], false) if piece_at_destination
+    check
+  end
+
+  #add every move to the left or right up to n spaces e.g. queen can move max 7 spaces
+  def generate_horizontal_moves(n)
+    generate_moves(n, 1, 0) + generate_moves(n, -1, 0)
   end
 
   #add every move up and down up to n spaces e.g. queen can move max 7 spaces
   def generate_vertical_moves(n)
-    moves = []
-    (1..n).each do |i|
-      break if col + i > 7
-      target = board.at(row, col + i)
-      if target.is_a? Piece
-        moves << [0, i] unless target.color == self.color
-        break
-      else
-        moves << [0,i]
-      end
-    end
-    (1..n).each do |i|
-      break if col - i < 0
-      target = board.at(row, col - i)
-      if target.is_a? Piece
-        moves << [0, -i] unless target.color == self.color
-        break
-      else
-        moves << [0, -i]
-      end
-    end
-    moves 
+    generate_moves(n, 0, 1) + generate_moves(n, 0, -1)
   end
 
   #add every move diagonally up for max n spaces e.g. queen can move max 7 spaces
   def generate_diagonal_moves(n)
-    moves = []
-    (1..n).each do |i|
-      break if row + i > 7 || col + i > 7
-      target = board.at(row + i, col + i)
-      if target.is_a? Piece
-        moves << [i, i] unless target.color == self.color
-        break
-      else
-        moves << [i, i]
-      end
-    end
-    (1..n).each do |i|
-      break if row + i > 7 || col - i < 0
-      target = board.at(row + i, col - i)
-      if target.is_a? Piece
-        moves << [i, -i] unless target.color == self.color
-        break
-      else
-        moves << [i, -i]
-      end
-    end
-    (1..n).each do |i|
-      break if row - i < 0 || col - i < 0
-      target = board.at(row - i, col - i)
-      if target.is_a? Piece
-        moves << [-i, -i] unless target.color == self.color
-        break
-      else
-        moves << [-i, -i]
-      end
-    end
-    (1..n).each do |i|
-      break if row - i < 0 || col + i > 7
-      target = board.at(row - i, col + i)
-      if target.is_a? Piece
-        moves << [-i, i] unless target.color == self.color
-        break
-      else
-        moves << [-i, i]
-      end
-    end
-    moves
+    generate_moves(n, 1, 1) + generate_moves(n, 1, -1) + generate_moves(n, -1, -1) + generate_moves(n, -1, 1)
   end
 end

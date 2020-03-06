@@ -52,6 +52,7 @@ class Game
   #prompts player to choose a piece
   def choose_piece_location
     available_pieces = board.pieces_with_moves(@white_turn)
+    puts available_pieces.map {|location| locations.key(location) }.inspect
     puts "#{@white_turn ? "White" : "Black"}'s turn."
     loop do
       puts "Please choose a piece to move on the board by typing its location"
@@ -63,12 +64,12 @@ class Game
   #returns true when a player is in checkmate
   def over?
     if @white_turn
-      if board.black_king.in_check?
-        board.checkmate?(@white_turn) ? puts "Checkmate" : puts "Check"
+      if board.king('black').in_check?
+        puts board.checkmate?(@white_turn) ?  "Checkmate" : "Check"
       end
     else
-      if board.white_king.in_check?
-        board.checkmate?(@white_turn) ? puts "Checkmate" : puts "Check"
+      if board.king('white').in_check?
+        puts board.checkmate?(@white_turn) ?  "Checkmate" : "Check"
       end
     end
   end

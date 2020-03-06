@@ -45,11 +45,9 @@ class Board
     puts "  A B C D E F G H"
   end
 
-  def place_piece(piece, location)
-    row = location[0]
-    col = location[1]
-    @grid[row][col] = piece
-    @grid[piece.row][piece.col] = nil
+  def place_piece(piece, location, existing_piece = true)
+    @grid[location[0]][location[1]] = piece
+    @grid[piece.row][piece.col] = nil if existing_piece 
     piece.set_location(location)
   end
 
@@ -67,9 +65,8 @@ class Board
 
   #returns locations of white or black pieces that have moves available
   def pieces_with_moves(white_turn)
-    grid.flatten.select do |piece|
-      piece.is_a?(Piece) && piece.color == (white_turn ? 'white' : 'black') && piece.valid_locations != []
-    end.map { |piece| [piece.row, piece.col] }
+    pieces = (white_turn ? white_pieces : black_pieces)
+    pieces.select { |piece| piece.valid_locations != [] }.map { |piece| [piece.row, piece.col] }
   end
 
   #returns array of white pieces on the board
@@ -83,6 +80,7 @@ class Board
   end
 
   def king(color)
+    # puts grid.flatten.select {|piece| piece.is_a?(King)}
     grid.flatten.select { |piece| piece.is_a?(King) && piece.color == color}.first
   end
 
@@ -90,8 +88,7 @@ class Board
     white_turn ? king = king('black') : king = king('white')
     checkmate = false
     if king.in_check?
-      checkmate = true if king.valid_locations == []
-      checkmate = @black_king.valid_locations.all? { |location| black_check?(location[0], location[1]) }
+      checkmate = true if pieces_with_moves(!white_turn) == []
     end
     checkmate
   end
