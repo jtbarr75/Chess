@@ -85,10 +85,10 @@ class Board
   end
 
   def checkmate?(white_turn)
-    white_turn ? king = king('black') : king = king('white')
+    white_turn ? king = king('white') : king = king('black')
     checkmate = false
     if king.in_check?
-      checkmate = true if pieces_with_moves(!white_turn) == []
+      checkmate = true if pieces_with_moves(white_turn) == []
     end
     checkmate
   end
