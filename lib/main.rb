@@ -1,3 +1,3 @@
 require_relative 'game'
 
-Game.new.start
+Game.new.new_or_load_game
