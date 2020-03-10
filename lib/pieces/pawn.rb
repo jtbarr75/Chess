@@ -5,16 +5,10 @@ require_relative 'piece.rb'
 #can move 2 space on first move
 #can move diagonally to take another piece
 class Pawn < Piece
-  def initialize(color, pos, board)
-    super(color, pos, board)
-  end
-
-  #update with block for board.at ?
-  #BIG UGLY pls reformat
   def create_moves
     moves = []
     if @color == 'white'
-      if row == 6
+      if @has_moved == false
         moves << [-2, 0] unless board.at(row - 2, col).is_a?(Piece) || board.at(row - 1, col).is_a?(Piece)
       end
       if (row - 1).between?(0, 7)
@@ -28,7 +22,7 @@ class Pawn < Piece
         end
       end
     elsif @color == 'black'
-      if row == 1
+      if @has_moved == false
         moves << [2, 0] unless board.at(row + 2, col).is_a? Piece || board.at(row + 1, col).is_a?(Piece)
       end
       if (row + 1).between?(0, 7)
