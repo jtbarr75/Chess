@@ -105,6 +105,3 @@ class Board
     place_piece(castle, [king.row, king.col + 1])
   end
 end
-
-# board = Board.new
-# board.print_grid

@@ -30,31 +30,21 @@ class Piece
     @col = loc[1]
   end
 
+  #has this piece moved since the beginning of the game
   def moved?
     row != @initial_position[0] || col != @initial_position[1]
   end
 
+  #returns the valid locations the piece can move to, not placing own king in check
   def valid_locations
     @has_moved = moved? if @has_moved == false
-    moves = create_moves.select { |move| into_check?(row + move[0], col + move[1]) == false}
-    valid = []
-    moves.each do |move|
-      valid << [move[0] + row, move[1] + col]
-    end
-    valid
+    create_moves.select { |move| into_check?(row + move[0], col + move[1]) == false}
+                .map { |move| [move[0] + row, move[1] + col] }
   end
 
+  #all the locations a piece could take another piece, doesn't use into_check? to prevent infinite recursion
   def threatened_locations
-    moves = create_moves
-    valid = []
-    moves.each do |move|
-      valid << [move[0] + row, move[1] + col]
-    end
-    valid
-  end
-
-  def create_moves
-    []
+    create_moves.map { |move| [move[0] + row, move[1] + col] }
   end
 
   #used to generate moves horizontally, vertically, diagonally
@@ -76,6 +66,7 @@ class Piece
     moves
   end
 
+  #returns true if moving to the new location would place own king into check
   def into_check?(new_row, new_col)
     check = false
     king = board.king(color)
