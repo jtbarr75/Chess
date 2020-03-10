@@ -17,6 +17,8 @@ class Piece
     @col = pos[1]
     @board = board
     @icon = ICONS["#{self.class.name.downcase}_#{color}".to_sym]
+    @has_moved = false
+    @initial_position = pos
   end
 
   def to_s 
@@ -28,7 +30,12 @@ class Piece
     @col = loc[1]
   end
 
+  def moved?
+    row != @initial_position[0] || col != @initial_position[1]
+  end
+
   def valid_locations
+    @has_moved = moved? if @has_moved == false
     moves = create_moves.select { |move| into_check?(row + move[0], col + move[1]) == false}
     valid = []
     moves.each do |move|
@@ -85,12 +92,12 @@ class Piece
 
   #add every move to the left or right up to n spaces e.g. queen can move max 7 spaces
   def generate_horizontal_moves(n)
-    generate_moves(n, 1, 0) + generate_moves(n, -1, 0)
+    generate_moves(n, 0, 1) + generate_moves(n, 0, -1)
   end
 
   #add every move up and down up to n spaces e.g. queen can move max 7 spaces
   def generate_vertical_moves(n)
-    generate_moves(n, 0, 1) + generate_moves(n, 0, -1)
+    generate_moves(n, 1, 0) + generate_moves(n, -1, 0)
   end
 
   #add every move diagonally up for max n spaces e.g. queen can move max 7 spaces

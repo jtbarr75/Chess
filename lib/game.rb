@@ -36,7 +36,14 @@ class Game
     until over?
       starting_location = choose_piece_location
       piece = board.at(starting_location[0], starting_location[1])
-      board.place_piece( piece, choose_destination(piece) )
+      destination = choose_destination(piece)
+      if destination == '0-0'
+        board.short_castle(piece)
+      elsif destination == '0-0-0'
+        board.long_castle(piece)
+      else
+        board.place_piece( piece, destination)
+      end
       board.print_grid
       @white_turn = !@white_turn
     end
@@ -55,11 +62,22 @@ class Game
   #prompts player to choose a destination
   def choose_destination(piece)
     available_moves = piece.valid_locations.map { |value| locations.key(value) }
-    puts "Available moves: #{available_moves.join(", ")}"
+    puts "Available moves: #{available_moves.join(", ")}" 
+    king = (@white_turn ? board.king('white') : board.king('black'))
+    can_short_castle = king.can_short_castle?
+    can_long_castle = king.can_long_castle?
+    if can_short_castle && can_long_castle
+      puts "#0-0 to castle kingside, 0-0-0 to castle queenside"
+    elsif can_short_castle
+      puts "0-0 to castle kingside"
+    elsif can_long_castle
+      puts "0-0-0 to castle queenside"
+    end
     loop do
       puts "Please choose a space on the board to move to"
       space = gets.chomp
       return locations[space] if available_moves.include?(space)
+      return space if (space == '0-0' && can_short_castle) || (space == '0-0-0' && can_long_castle)
     end
   end
 
@@ -102,7 +120,7 @@ class Game
   def load_game
     puts "Please choose from the following saves:"
     choices = get_save_games
-    save_num = choose_save_game
+    save_num = choose_save_game(choices)
 
     File.open(choices[save_num]) do |file|
       game = Marshal.load(file)
@@ -117,20 +135,17 @@ class Game
   def get_save_games
     save_games = [nil]
     index = 1
-    Dir.entries('saves').each_with_index do |fname|
+    Dir.entries('saves').each do |fname|
       unless fname == ".." || fname == "."
         save_games << "saves/#{fname}"
-        File.open("saves/#{fname}") do |file|
-          game = Marshal.load(file)
-          puts "#{index}. #{fname}"
-          index += 1
-        end
+        puts "#{index}. #{fname}"
+        index += 1
       end
     end
     save_games
   end
 
-  def choose_save_game
+  def choose_save_game(choices)
     save_num = gets.chomp.to_i
     until save_num.between?(1,choices.length-1)
       puts "Choose a save file from 1 - #{choices.length-1}"

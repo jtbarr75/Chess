@@ -92,6 +92,18 @@ class Board
     end
     checkmate
   end
+
+  def short_castle(king)
+    castle = at(king.row, king.col + 3)
+    place_piece(king, king.short_castle_location)
+    place_piece(castle, [king.row, king.col - 1])
+  end
+
+  def long_castle(king)
+    castle = at(king.row, king.col - 4)
+    place_piece(king, king.long_castle_location)
+    place_piece(castle, [king.row, king.col + 1])
+  end
 end
 
 # board = Board.new
