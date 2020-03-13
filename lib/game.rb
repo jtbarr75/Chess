@@ -37,6 +37,7 @@ class Game
       starting_location = choose_piece_location
       piece = board.at(starting_location[0], starting_location[1])
       destination = choose_destination(piece)
+      piece.update_just_moved(destination) if piece.is_a?(Pawn)
       if destination == '0-0'
         board.short_castle(piece)
       elsif destination == '0-0-0'
@@ -46,6 +47,7 @@ class Game
       end
       board.print_grid
       @white_turn = !@white_turn
+      board.reset_pawns(@white_turn)
     end
   end
 

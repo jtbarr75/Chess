@@ -2,10 +2,11 @@ require_relative 'piece.rb'
 
 class King < Piece
   def create_moves
-    moves = generate_horizontal_moves(1) + generate_vertical_moves(1) + generate_diagonal_moves(1)
+    generate_horizontal_moves(1) + generate_vertical_moves(1) + generate_diagonal_moves(1)
   end
 
   def in_check?(r = self.row, c = self.col)
+    return false if self.threatened_locations == [] #if the king is completely surrounded by own pieces, not in check, skip checking enemies
     threatened_locations = []
     enemies = (color == 'black' ? board.white_pieces : board.black_pieces)
     enemies.each do |piece|

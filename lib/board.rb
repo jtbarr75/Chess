@@ -46,6 +46,9 @@ class Board
   end
 
   def place_piece(piece, location, existing_piece = true)
+    if piece.is_a?(Pawn) && location[1] != piece.col && at(piece.row, location[1]).is_a?(Pawn)
+      @grid[piece.row][location[1]] = nil if existing_piece
+    end
     @grid[location[0]][location[1]] = piece
     @grid[piece.row][piece.col] = nil if existing_piece 
     piece.set_location(location)
@@ -103,5 +106,10 @@ class Board
     castle = at(king.row, king.col - 4)
     place_piece(king, king.long_castle_location)
     place_piece(castle, [king.row, king.col + 1])
+  end
+
+  def reset_pawns(white_turn)
+    color = white_turn ? 'white' : 'black'
+    @grid.each { |row| row.each { |piece| piece.just_moved_two = false if piece.is_a?(Pawn) && piece.color == color }}
   end
 end

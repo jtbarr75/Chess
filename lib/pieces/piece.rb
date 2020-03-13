@@ -70,14 +70,17 @@ class Piece
   def into_check?(new_row, new_col)
     check = false
     king = board.king(color)
-    piece_at_destination = board.at(new_row, new_col)
+    enemy = board.at(new_row, new_col)
+    if self.is_a?(Pawn) && new_col != col && enemy == nil
+      enemy = board.at(self.row, new_col)
+    end
 
     initial_row, initial_col = self.row, self.col
     board.place_piece(self, [new_row, new_col])
     check = true if king.in_check?
     
     board.place_piece(self, [initial_row, initial_col])
-    board.place_piece(piece_at_destination, [new_row, new_col], false) if piece_at_destination
+    board.place_piece(enemy, [enemy.row, enemy.col], false) if enemy
     check
   end
 
