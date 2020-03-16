@@ -21,56 +21,34 @@ class Pawn < Piece
 
   def update_just_moved(destination)
     if destination[0] == row + 2 || destination[0] == row - 2
-      puts 'updated'
       @just_moved_two = true 
     end
   end
 
   def create_moves
     moves = []
-    if @color == 'white'
-      #check for first move, can move two spaces
-      if @has_moved == false
-        moves << [-2, 0] unless board.at(row - 2, col).is_a?(Piece) || board.at(row - 1, col).is_a?(Piece)
+    #white pawns move up board, row index decreases. Black is opposite.
+    dir = (@color == 'white' ? -1 : 1)
+    
+    #check for first move, can move two spaces
+    if @has_moved == false
+      moves << [dir * 2, 0] unless board.at(row + dir * 2, col).is_a?(Piece) || board.at(row + dir * 1, col).is_a?(Piece)
+    end
+    #check for normal move one space
+    if (row + dir * 1).between?(0, 7)
+      moves << [dir * 1, 0] unless board.at(row + dir * 1, col).is_a? Piece
+    end
+    #check for taking piece
+    [[dir * 1, -1],[dir * 1, 1]].each do |move|
+      next unless (row + move[0]).between?(0, 7) && (col + move[1]).between?(0,7)
+      target = board.at(row + move[0], col + move[1])
+      if target.is_a? Piece
+        moves << move unless target.color == self.color
       end
-      #check for normal move one space
-      if (row - 1).between?(0, 7)
-        moves << [-1, 0] unless board.at(row - 1, col).is_a? Piece
-      end
-      #check for taking piece
-      [[-1,-1],[-1,1]].each do |move|
-        next unless (row + move[0]).between?(0, 7) && (col + move[1]).between?(0,7)
-        target = board.at(row + move[0], col + move[1])
-        if target.is_a? Piece
-          moves << move unless target.color == self.color
-        end
-        #check for en passant
-        target = board.at(row, col + move[1])
-        if target.is_a?(Pawn) && target.color != self.color && target.just_moved_two
-          moves << move
-        end
-      end
-    elsif @color == 'black'
-      #check for first move, can move two spaces
-      if @has_moved == false
-        moves << [2, 0] unless board.at(row + 2, col).is_a? Piece || board.at(row + 1, col).is_a?(Piece)
-      end
-      #check for normal move one space
-      if (row + 1).between?(0, 7)
-        moves << [1, 0] unless board.at(row + 1, col).is_a? Piece
-      end
-      #check for taking piece
-      [[1, 1],[1, -1]].each do |move|
-        next unless (row + move[0]).between?(0, 7) && (col + move[1]).between?(0,7)
-        target = board.at(row + move[0], col + move[1])
-        if target.is_a? Piece
-          moves << move unless target.color == self.color
-        end
-        #check for en passant
-        target = board.at(row, col + move[1])
-        if target.is_a?(Pawn) && target.color != self.color && target.just_moved_two
-          moves << move
-        end
+      #check for en passant
+      target = board.at(row, col + move[1])
+      if target.is_a?(Pawn) && target.color != self.color && target.just_moved_two
+        moves << move
       end
     end
     moves
