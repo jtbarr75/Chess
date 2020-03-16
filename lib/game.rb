@@ -122,6 +122,7 @@ class Game
   def load_game
     puts "Please choose from the following saves:"
     choices = get_save_games
+    choices.each_with_index { |choice, index| puts "#{index}. #{choice[6..-1]}" if index > 0}
     save_num = choose_save_game(choices)
 
     File.open(choices[save_num]) do |file|
@@ -136,15 +137,12 @@ class Game
 
   def get_save_games
     save_games = [nil]
-    index = 1
     Dir.entries('saves').each do |fname|
       unless fname == ".." || fname == "."
         save_games << "saves/#{fname}"
-        puts "#{index}. #{fname}"
-        index += 1
       end
     end
-    save_games
+    save_games.map(&:to_s).sort!
   end
 
   def choose_save_game(choices)
