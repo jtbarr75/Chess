@@ -17,18 +17,6 @@ describe Board do
       allow(piece).to receive(:valid_locations).and_return([[0,4],[0,5]])
       expect(@board.checkmate?(false)).to eq(false)
     end
-
-    xit "returns true if king has no available moves that wouldn't also be in check" do
-      pawn1 = Pawn.new('white', [1,5], @board)
-      pawn2 = Pawn.new('white', [2,4], @board)
-      @board.place_piece(pawn1, [1,5])
-      @board.place_piece(pawn2, [2,4])
-      allow(@board).to receive(:white_pieces).and_return([pawn1, pawn2])
-      allow(@board).to receive(:pieces_with_moves).and_return([@board.at(0,4)])
-      allow(pawn1).to receive(:valid_locations).and_return([[0,4],[0,5]])
-      allow(pawn2).to receive(:valid_locations).and_return([[1,5],[1,4]])
-      expect(@board.checkmate?(false)).to eq(true)
-    end
   end
 
   describe "#king" do
